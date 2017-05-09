@@ -1,4 +1,4 @@
-# transducers-java
+# transducers-java(Java8)
 
 [Transducers](http://clojure.org/transducers) are composable algorithmic transformations. They are independent from the context of their input and output sources and specify only the essence of the transformation in terms of an individual element. Because transducers are decoupled from input or output sources, they can be used in many different processes - collections, streams, channels, observables, etc. Transducers compose directly, without awareness of input or creation of intermediate aggregates.
 
@@ -10,7 +10,7 @@ transducers-java is brought to you by [Cognitect Labs](http://cognitect-labs.git
 
 ## Releases and Dependency Information
 
-* Latest release: 0.4.67
+* Latest release: 0.4.69
 * [All Released Versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cognitect%22%20AND%20a%3A%22transducers-java%22)
 
 [Maven](http://maven.apache.org/) dependency information:
@@ -40,23 +40,15 @@ All of the methods on the `Fns` class are static.
 A Transducer transforms a reducing function of one type into a reducing function of another (possibly the same) type.  For the sake of illustration, you can define an `com.cognitect.transducers.ITransducer` mapping instance that encapsulates an operation that takes `Long`s and converts them into `String`s:
 
 ```java
-ITransducer<String, Long> stringify = map(new Function<Long, String>() {
-    @Override
-    public String apply(Long i) {
-        return i.toString();
-    }
-});
+ITransducer<String, Long> stringify = map(i -> i.toString());
 ```
 
 Because Transducers are agnostic to both the source of their inputs and the target of their intermediate sub-processes, you need a way to independently supply these elements for the purpose of executing an operation.  The specification of the intermediate stages is given by creating an instance of an `com.cognitect.transducers.IStepFunction`, shown below:
 
 ```java
-IStepFunction<List<String>, String> addString = new IStepFunction<List<String>, String>() {
-    @Override
-    public List<String> apply(List<String> result, String input, AtomicBoolean reduced) {
-        result.add(input);
-        return result;
-    }
+IStepFunction<List<String>, String> addString = (result, input, reduced) -> {
+    result.add(input);
+    return result;
 };
 ```
 
@@ -75,12 +67,7 @@ The `longs` method is a convenience (not shown here) that returns a list of `Lon
 Transducers are composable, allowing you to define aggregate processes from parts.  To show this, you can define a Transducer named `filterOdds` that is meant to identify odd numbered `Longs` via the results of a `com.cognitect.transducers.Predicate` instance:
 
 ```java
-ITransducer<Long, Long> filterOdds = filter(new Predicate<Long>() {
-    @Override
-    public boolean test(Long num) {
-        return num.longValue() % 2 != 0;
-    }
-});			
+ITransducer<Long, Long> filterOdds = filter(num -> num.longValue() % 2 != 0);		
 ```
 
 Transducers are composed using the `com.cognitect.transducers.Fns#compose` method:

@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @param <R> Type of first argument and return value
  * @param <T> Type of input to reduce
  */
+@FunctionalInterface
 public interface IStepFunction<R, T> {
     /**
      * Applies the reducing function to the current result and
@@ -22,5 +23,5 @@ public interface IStepFunction<R, T> {
      *                to stop the reduction process
      * @return A new result value
      */
-    public R apply(R result, T input, AtomicBoolean reduced);
+     R apply(R result, T input, AtomicBoolean reduced);
 }

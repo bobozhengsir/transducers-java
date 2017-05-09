@@ -14,6 +14,8 @@
 
 package com.cognitect.transducers;
 
+import java.util.Objects;
+
 /**
  * A Transducer transforms a reducing function of one type into a
  * reducing function of another (possibly the same) type, applying
@@ -21,6 +23,7 @@ package com.cognitect.transducers;
  * @param <B> The type of data processed by an input process
  * @param <C> The type of data processed by the transduced process
  */
+@FunctionalInterface
 public interface ITransducer<B, C> {
     /**
      * Transforms a reducing function of B into a reducing function
@@ -40,5 +43,13 @@ public interface ITransducer<B, C> {
      *           the composed transducer returns when applied
      * @return A new composite transducer
      */
-    <A> ITransducer<A, C> comp(ITransducer<A, ? super B> right);
+    default <A> ITransducer<A, C> comp(ITransducer<A, ? super B> right) {
+        Objects.requireNonNull(right);
+        return new ITransducer<A, C>() {
+            @Override
+            public <R> IReducingFunction<R, C> apply(IReducingFunction<R, ? super A> rf) {
+                return ITransducer.this.apply(right.apply(rf));
+            }
+        };
+    }
 }

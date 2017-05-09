@@ -27,12 +27,12 @@ public interface IReducingFunction<R, T> extends IStepFunction<R, T> {
      * Returns a newly initialized result.
      * @return a new result
      */
-    public R apply();
+     R apply();
 
     /**
      * Completes processing of a final result.
      * @param result the final reduction result
      * @return the completed result
      */
-    public R apply(R result);
+     R apply(R result);
 }
